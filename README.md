@@ -1,1 +1,1 @@
-# Code-Wars-API-Testing
+# Code Wars API Testing
