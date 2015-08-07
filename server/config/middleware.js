@@ -9,7 +9,6 @@ module.exports = function (app, express) {
   app.use(bodyParser.json());
   app.use(express.static(__dirname + '/../../client'));
 
-  // TFp2KBBKWkDu_qCRyByV
   app.use('/api/challenges', challengesRouter);
   require('../challenges/challengesRouter.js')(challengesRouter);
 };

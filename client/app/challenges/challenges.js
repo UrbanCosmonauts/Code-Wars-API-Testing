@@ -1,20 +1,16 @@
 angular.module('battlescript.challenges', [])
 .controller('ChallengesController', function ($scope, Challenges) {
 
-  // get a random challenge
-  $scope.getOne = function() {
-    Challenges.getOne()
+  $scope.data;
+
+  $scope.getChallenge = function() {
+    Challenges.getChallenge()
       .then(function(data) {
-        console.log('success');
-        console.log(data);
+        $scope.data = data;
       })
       .catch(function(err) {
-        console.log('error');
         console.log(err);
       });
   };
-
-  // run on load
-  $scope.getOne();
 
 });

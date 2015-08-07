@@ -1,8 +1,16 @@
+var request = require('request');
+
 module.exports = {
-  getOne: function(req, res, next) {
-    console.log('---------------> here');
-    res.json({
-      data: 'data'
+  getChallenge: function(req, res) {
+    var options = {
+      url: 'https://www.codewars.com/api/v1/code-challenges/valid-braces',
+      headers: {
+        'Authorization': 'TFp2KBBKWkDu_qCRyByV'
+      }
+    };
+    
+    request(options, function(error, response, body) {
+      res.send(response);
     });
   }
 };
