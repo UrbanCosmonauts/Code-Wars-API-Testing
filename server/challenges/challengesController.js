@@ -16,17 +16,12 @@ module.exports = {
     });
   },
 
+  submitChallenge: function(req, res) {
+    // TODO: Needs to be able to submit a challenge and test it
+  },
+
   getAllChallenges: function(req, res) {
+    // TODO: Be able to get all challenges here
     res.send('need to somehow get all challenges');
-    // var options = {
-    //   url: 'https://www.codewars.com/api/v1/code-challenges',
-    //   headers: {
-    //     'Authorization': 'TFp2KBBKWkDu_qCRyByV'
-    //   }
-    // };
-    
-    // request(options, function(error, response, body) {
-    //   res.send(response);
-    // });
   }
 };

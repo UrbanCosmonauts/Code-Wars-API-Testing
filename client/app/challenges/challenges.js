@@ -18,7 +18,7 @@ angular.module('battlescript.challenges', [])
   };
 
   $scope.submitChallenge = function() {
-
+    // TODO: Needs to be able to submit a challenge and test it
   };
 
   $scope.getAllChallenges = function() {

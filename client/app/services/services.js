@@ -13,6 +13,7 @@ angular.module('battlescript.services', [])
   };
 
   var submitChallenge = function() {
+    // TODO: Needs to be able to submit a challenge and test it
     return $http({
       method: 'POST',
       url: '/api/challenges/getchallenge',
@@ -22,12 +23,13 @@ angular.module('battlescript.services', [])
   };
 
   var getAllChallenges = function() {
-    return $http({
-      method: 'GET',
-      url: '/api/challenges/getallchallenges',
-    }).then(function(res) {
-      return res.data;
-    });
+    // TODO: Be able to get all challenges here
+    // return $http({
+    //   method: 'GET',
+    //   url: '/api/challenges/getallchallenges',
+    // }).then(function(res) {
+    //   return res.data;
+    // });
   };
 
   return {
