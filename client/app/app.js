@@ -1,8 +1,10 @@
 angular.module('battlescript', [
   'battlescript.services',
+  'battlescript.filters',
   'battlescript.home',
   'battlescript.challenges',
-  'ngRoute'
+  'ngRoute',
+  'ngSanitize'
 ])
 .config(function($routeProvider, $httpProvider) {
   $routeProvider
