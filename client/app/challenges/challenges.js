@@ -7,6 +7,8 @@ angular.module('battlescript.challenges', [])
   $scope.getChallenge = function() {
     Challenges.getChallenge()
       .then(function(data) {
+        console.log('-----> CLIENT WORKING: requesting a challenge');
+        console.log(data);
         $scope.challenge = JSON.parse(data.body);
         $scope.challengeDescription = $scope.challenge.description;
       })
@@ -14,6 +16,21 @@ angular.module('battlescript.challenges', [])
         console.log(err);
       });
   };
+
+  $scope.submitChallenge = function() {
+    // TODO: Needs to be able to submit a challenge and test it
+  };
+
+  $scope.getAllChallenges = function() {
+    Challenges.getAllChallenges()
+      .then(function(data) {
+        $scope.challenge = JSON.parse(data.body);
+        $scope.challengeDescription = $scope.challenge.description;
+      })
+      .catch(function(err) {
+        console.log(err);
+      });
+  }
 
   // set up syntax highlighting
   var codeBlock = CodeMirror.fromTextArea(angular.element('.code-block')[0], {
