@@ -2,16 +2,17 @@ angular.module('battlescript.services', [])
 
 // Challenges factory
 .factory('Challenges', function($http) {
-  var getOne = function() {
+  
+  var getChallenge = function() {
     return $http({
       method: 'GET',
-      url: '/api/challenges/getOne'
+      url: '/api/challenges/getchallenge',
     }).then(function(res) {
       return res.data;
     });
   };
 
   return {
-    getOne: getOne
+    getChallenge: getChallenge
   }
 });
