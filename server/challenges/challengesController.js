@@ -27,27 +27,29 @@ module.exports = {
           'Authorization': 'TFp2KBBKWkDu_qCRyByV'
         }
       }, function(pollError, pollResponse, pollBody) {
-        console.log(pollResponse);
-
-        if (pollBody.success) {
-          res.end('successful poll!');
+        pollBody = JSON.parse(pollBody); 
+        if (pollBody && pollBody.success) {
+          console.log('successful poll!');
+          console.log(pollBody);
+          res.end();
         } else {
-          if (pollCounter++ > 10) {
+          if (pollCounter++ >= 10) {
             console.log('-----> Too many polls...');
             res.end();
           } else {
+            console.log('poll # ', pollCounter);
             setTimeout(function() {
-              poll(dmid, pollBody);
-            }, 1000);
+              poll(dmid);
+            }, 500);
           }
         }
       });
     };
 
     request.post({
-      url: 'https://www.codewars.com/api/v1/code-challenges/projects/' + req.body.projectId + '/solutions/' + req.body.projectId + '/attempt',
+      url: 'https://www.codewars.com/api/v1/code-challenges/projects/' + req.body.projectId + '/solutions/' + req.body.solutionId + '/attempt',
       json: {
-        code: 'this is my code'
+        code: 'function countBy(x, n) {\nvar z = [];\nfor (i = 1; i <= n; i++) {\nz.push(x * i);\n}\nreturn z;\n}'
       },
       headers: {
         'Authorization': 'TFp2KBBKWkDu_qCRyByV'
@@ -58,60 +60,6 @@ module.exports = {
       var dmid = attemptBody.dmid;
       poll(dmid);
     });
-
-
-    // // START THE POLLING BACK AND FORTH TO THE CODEWARS SERVER
-    // function poll(error, result, dmid) {
-    //   console.log('-----> POLL ATTEMPT');
-
-    //   var dmid;
-    //   if (error) throw new Error('There was an error...');
-    //   if (pollCounter++ > 20) throw new Error('Too many attempts...');
-
-    //   dmid = dmid || result.dmid;
-    //   console.log(dmid);
-
-    //   // DO THE GET HERE
-    //   request.get({
-    //     url: 'https://www.codewars.com/api/v1/deferred/' + dmid,
-    //     headers: {
-    //       'Authorization': 'TFp2KBBKWkDu_qCRyByV'
-    //     }
-    //   }, function(error, response, body) {
-    //     check(dmid, error, body);
-    //   });
-    // }
-
-    // // KEEP CHECKING!
-    // function check(dmid, error, result) {
-    //   console.log(result);
-    //   if (result.success) {
-    //     console.log('SUCESSFUL POLL FUCKERS');
-    //     res.end();
-    //   }
-    //   setTimeout(function() {
-    //     poll(error, null, dmid);
-    //   }, 1000);
-    // }
-
-    // // DO FIRST POST HERE
-    // // JUST FUCKIN DO IT.
-    // request.post({
-    //   url: 'https://www.codewars.com/api/v1/code-challenges/projects/' + req.body.projectId +
-    //        '/solutions/' + req.body.solutionId + '/attempt',
-    //   json: {
-    //     code: 'my attempt',
-    //     output_format: 'raw'
-    //   },
-    //   headers: {
-    //     'Authorization': 'TFp2KBBKWkDu_qCRyByV'
-    //   }
-    // }, function(error, response, body) {
-    //   // BODY IS THE RESULT OF THE INITIAL POST.
-    //   console.log('first post');
-    //   console.log(body);
-    //   poll(error, body);
-    // });
   },
 
   submitChallenge: function(req, res) {
