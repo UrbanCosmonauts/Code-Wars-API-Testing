@@ -15,28 +15,38 @@ module.exports = {
   },
 
   attemptChallenge: function(req, res) {
-    // Init a poll counter
+    // Init a poll counter, so that if we poll too many times, it times out.
     var pollCounter = 0;
     
     // Poll the api
-    var poll = function(dmid, body) {
+    var poll = function(dmid) {
       // Poll it with a get request, including the dmid
       request.get({
         url: 'https://www.codewars.com/api/v1/deferred/' + dmid,
         headers: {
           'Authorization': 'TFp2KBBKWkDu_qCRyByV'
         }
-      }, function(pollError, pollResponse, pollBody) {
-        pollBody = JSON.parse(pollBody); 
-        if (pollBody && pollBody.success) {
+      }, function(error, response, body) {
+        // parse the json response
+        body = JSON.parse(body); 
+
+        if (body && body.success) {
+          // if poll body exists, and the poll is successful, we're good to go.
           console.log('successful poll!');
-          console.log(pollBody);
+          console.log(body);
           res.end();
         } else {
-          if (pollCounter++ >= 10) {
+          // otherwise, we need to keep polling...
+          if (pollCounter++ >= 20) {
+            // however, we should safety check here so that we don't overpoll
+            // the api and run into endless loop. If we cross 20 polls,
+            // something is definitely wrong...
             console.log('-----> Too many polls...');
             res.end();
           } else {
+            // as long as we're under the poll limit, keep on polling every
+            // 0.5 seconds with the generated dmid from the initial post
+            // request.
             console.log('poll # ', pollCounter);
             setTimeout(function() {
               poll(dmid);
@@ -46,19 +56,25 @@ module.exports = {
       });
     };
 
+    // kick things off here with the first post request to the api, passing in
+    // the project id and solution id. This will return the dmid which we can
+    // use for polling.
     request.post({
       url: 'https://www.codewars.com/api/v1/code-challenges/projects/' + req.body.projectId + '/solutions/' + req.body.solutionId + '/attempt',
       json: {
-        code: 'function countBy(x, n) {\nvar z = [];\nfor (i = 1; i <= n; i++) {\nz.push(x * i);\n}\nreturn z;\n}'
+        code: 'dummy code'
       },
       headers: {
         'Authorization': 'TFp2KBBKWkDu_qCRyByV'
       }
-    }, function(attemptError, attemptResponse, attemptBody) {
-      if (attemptError) throw new Error('-----> Error when doing initial attempt...');
-      
-      var dmid = attemptBody.dmid;
-      poll(dmid);
+    }, function(error, response, body) {
+      if (error) {
+        console.log('-----> Error when doing initial attempt...');
+        res.end();
+      }
+
+      // run the initial poll with the fetched dmid.
+      poll(body.dmid);
     });
   },
 
