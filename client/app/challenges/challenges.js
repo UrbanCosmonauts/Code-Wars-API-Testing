@@ -34,6 +34,8 @@ angular.module('battlescript.challenges', [])
     // TODO: Attempt challenge
     Challenges.attemptChallenge($scope.challengeProjectId, $scope.challengeSolutionId)
       .then(function(data) {
+        // TODO: polling is successful at this point in time, time to send
+        // and recieve the correct data
         console.log(data);
       });
   };
