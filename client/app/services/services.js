@@ -12,11 +12,25 @@ angular.module('battlescript.services', [])
     });
   };
 
+  var attemptChallenge = function(projectId, solutionId) {
+    return $http({
+      method: 'POST',
+      url: '/api/challenges/attemptchallenge',
+      data: {
+        code: 'This is my dummy data',
+        projectId: projectId,
+        solutionId: solutionId
+      }
+    }).then(function(res) {
+      return res.data;
+    });
+  };
+
   var submitChallenge = function() {
     // TODO: Needs to be able to submit a challenge and test it
     return $http({
       method: 'POST',
-      url: '/api/challenges/getchallenge',
+      url: '/api/challenges/getchallenge'
     }).then(function(res) {
       return res.data;
     });
@@ -34,6 +48,7 @@ angular.module('battlescript.services', [])
 
   return {
     getChallenge: getChallenge,
+    attemptChallenge: attemptChallenge,
     submitChallenge: submitChallenge,
     getAllChallenges: getAllChallenges
   }
