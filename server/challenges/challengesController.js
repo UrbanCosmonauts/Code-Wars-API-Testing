@@ -15,103 +15,67 @@ module.exports = {
   },
 
   attemptChallenge: function(req, res) {
-    // Init a poll counter
+    // Init a poll counter, so that if we poll too many times, it times out.
     var pollCounter = 0;
     
     // Poll the api
-    var poll = function(dmid, body) {
+    var poll = function(dmid) {
       // Poll it with a get request, including the dmid
       request.get({
         url: 'https://www.codewars.com/api/v1/deferred/' + dmid,
         headers: {
           'Authorization': 'TFp2KBBKWkDu_qCRyByV'
         }
-      }, function(pollError, pollResponse, pollBody) {
-        console.log(pollResponse);
+      }, function(error, response, body) {
+        // parse the json response
+        body = JSON.parse(body); 
 
-        if (pollBody.success) {
-          res.end('successful poll!');
+        if (body && body.success) {
+          // if poll body exists, and the poll is successful, we're good to go.
+          console.log('successful poll!');
+          console.log(body);
+          res.end();
         } else {
-          if (pollCounter++ > 10) {
+          // otherwise, we need to keep polling...
+          if (pollCounter++ >= 20) {
+            // however, we should safety check here so that we don't overpoll
+            // the api and run into endless loop. If we cross 20 polls,
+            // something is definitely wrong...
             console.log('-----> Too many polls...');
             res.end();
           } else {
+            // as long as we're under the poll limit, keep on polling every
+            // 0.5 seconds with the generated dmid from the initial post
+            // request.
+            console.log('poll # ', pollCounter);
             setTimeout(function() {
-              poll(dmid, pollBody);
-            }, 1000);
+              poll(dmid);
+            }, 500);
           }
         }
       });
     };
 
+    // kick things off here with the first post request to the api, passing in
+    // the project id and solution id. This will return the dmid which we can
+    // use for polling.
     request.post({
-      url: 'https://www.codewars.com/api/v1/code-challenges/projects/' + req.body.projectId + '/solutions/' + req.body.projectId + '/attempt',
+      url: 'https://www.codewars.com/api/v1/code-challenges/projects/' + req.body.projectId + '/solutions/' + req.body.solutionId + '/attempt',
       json: {
-        code: 'this is my code'
+        code: 'dummy code'
       },
       headers: {
         'Authorization': 'TFp2KBBKWkDu_qCRyByV'
       }
-    }, function(attemptError, attemptResponse, attemptBody) {
-      if (attemptError) throw new Error('-----> Error when doing initial attempt...');
-      
-      var dmid = attemptBody.dmid;
-      poll(dmid);
+    }, function(error, response, body) {
+      if (error) {
+        console.log('-----> Error when doing initial attempt...');
+        res.end();
+      }
+
+      // run the initial poll with the fetched dmid.
+      poll(body.dmid);
     });
-
-
-    // // START THE POLLING BACK AND FORTH TO THE CODEWARS SERVER
-    // function poll(error, result, dmid) {
-    //   console.log('-----> POLL ATTEMPT');
-
-    //   var dmid;
-    //   if (error) throw new Error('There was an error...');
-    //   if (pollCounter++ > 20) throw new Error('Too many attempts...');
-
-    //   dmid = dmid || result.dmid;
-    //   console.log(dmid);
-
-    //   // DO THE GET HERE
-    //   request.get({
-    //     url: 'https://www.codewars.com/api/v1/deferred/' + dmid,
-    //     headers: {
-    //       'Authorization': 'TFp2KBBKWkDu_qCRyByV'
-    //     }
-    //   }, function(error, response, body) {
-    //     check(dmid, error, body);
-    //   });
-    // }
-
-    // // KEEP CHECKING!
-    // function check(dmid, error, result) {
-    //   console.log(result);
-    //   if (result.success) {
-    //     console.log('SUCESSFUL POLL FUCKERS');
-    //     res.end();
-    //   }
-    //   setTimeout(function() {
-    //     poll(error, null, dmid);
-    //   }, 1000);
-    // }
-
-    // // DO FIRST POST HERE
-    // // JUST FUCKIN DO IT.
-    // request.post({
-    //   url: 'https://www.codewars.com/api/v1/code-challenges/projects/' + req.body.projectId +
-    //        '/solutions/' + req.body.solutionId + '/attempt',
-    //   json: {
-    //     code: 'my attempt',
-    //     output_format: 'raw'
-    //   },
-    //   headers: {
-    //     'Authorization': 'TFp2KBBKWkDu_qCRyByV'
-    //   }
-    // }, function(error, response, body) {
-    //   // BODY IS THE RESULT OF THE INITIAL POST.
-    //   console.log('first post');
-    //   console.log(body);
-    //   poll(error, body);
-    // });
   },
 
   submitChallenge: function(req, res) {
